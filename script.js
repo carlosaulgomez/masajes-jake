@@ -1,26 +1,74 @@
 const body = document.body;
 const menuToggle = document.querySelector(".menu-toggle");
 const mobileMenu = document.querySelector("#mobileMenu");
-const revealItems = document.querySelectorAll("[data-reveal]");
+const therapyGrid = document.querySelector("#therapyGrid");
 const bookingForm = document.querySelector(".booking-form");
 const availability = document.querySelector("#availability");
 const formStatus = document.querySelector("#formStatus");
 const whatsappFallback = document.querySelector("#whatsappFallback");
 const whatsappLink = document.querySelector("#whatsappLink");
+const availabilitySummary = document.querySelector("#availabilitySummary");
+const availabilityDetail = document.querySelector("#availabilityDetail");
 const therapy = document.querySelector("#therapy");
 const date = document.querySelector("#date");
 
 const businessWhatsapp = "56954147874";
 
+const businessSchedule = {
+  openDays: [2, 3, 4, 5],
+  openDayText: "martes a viernes",
+  hoursText: "10:00 a 19:30",
+  sameDayLeadMinutes: 45,
+  blockedDates: [],
+};
+
+const services = [
+  {
+    id: "desbloqueo-cervical",
+    number: "01",
+    name: "Desbloqueo cervical",
+    duration: "80 min",
+    price: "CLP 54.000",
+    pressure: "Media a firme",
+    description:
+      "Trabajo profundo en trapecio, mandibula y base del craneo para descargar pantallas, bruxismo y tension acumulada.",
+    slots: ["10:30", "15:00", "18:30"],
+    featured: true,
+  },
+  {
+    id: "drenaje-linfatico",
+    number: "02",
+    name: "Drenaje linfatico",
+    duration: "50 min",
+    price: "CLP 42.000",
+    pressure: "Suave",
+    description: "Maniobras suaves, respiracion guiada y pausa final para piernas pesadas.",
+    slots: ["10:00", "13:00", "17:00"],
+  },
+  {
+    id: "piedras-tibias",
+    number: "03",
+    name: "Piedras tibias",
+    duration: "80 min",
+    price: "CLP 58.000",
+    pressure: "Media",
+    description: "Calor localizado y masaje envolvente para soltar espalda baja y caderas.",
+    slots: ["11:00", "16:00"],
+  },
+  {
+    id: "ritual-jacqueline",
+    number: "04",
+    name: "Ritual Jacqueline",
+    duration: "110 min",
+    price: "CLP 72.000",
+    pressure: "Suave a media",
+    description: "Aromaterapia, masaje integral y descanso guiado para bajar revoluciones.",
+    slots: ["12:00", "18:00"],
+  },
+];
+
 let selectedSlot = "";
 let availabilityTimer;
-
-const slotMap = {
-  "Desbloqueo cervical": ["10:30", "15:00", "18:30"],
-  "Drenaje linfatico": ["09:30", "13:00", "17:00"],
-  "Piedras tibias": ["11:00", "16:00"],
-  "Ritual Jacqueline": ["12:00", "18:00"],
-};
 
 function getTodayValue() {
   const today = new Date();
@@ -28,7 +76,126 @@ function getTodayValue() {
   return new Date(today.getTime() - timezoneOffset).toISOString().split("T")[0];
 }
 
-date.min = getTodayValue();
+function getSelectedService() {
+  return services.find((service) => service.id === therapy.value);
+}
+
+function getDateDay(value) {
+  return new Date(`${value}T12:00:00`).getDay();
+}
+
+function getTimeInMinutes(value) {
+  const [hours, minutes] = value.split(":").map(Number);
+  return hours * 60 + minutes;
+}
+
+function isToday(value) {
+  return value === getTodayValue();
+}
+
+function addDays(value, amount) {
+  const nextDate = new Date(`${value}T12:00:00`);
+  nextDate.setDate(nextDate.getDate() + amount);
+  return nextDate.toISOString().split("T")[0];
+}
+
+function isOpenDate(value) {
+  if (!value || value < getTodayValue()) {
+    return false;
+  }
+
+  return (
+    businessSchedule.openDays.includes(getDateDay(value)) &&
+    !businessSchedule.blockedDates.includes(value)
+  );
+}
+
+function getUniqueSlotsForDate(value) {
+  return [...new Set(services.flatMap((service) => getAvailableSlots(service, value)))].sort();
+}
+
+function getAvailableSlots(service, value) {
+  if (!service || !isOpenDate(value)) {
+    return [];
+  }
+
+  if (!isToday(value)) {
+    return service.slots;
+  }
+
+  const now = new Date();
+  const minimumTime = now.getHours() * 60 + now.getMinutes() + businessSchedule.sameDayLeadMinutes;
+  return service.slots.filter((slot) => getTimeInMinutes(slot) >= minimumTime);
+}
+
+function updateHeroAvailability() {
+  const todayValue = getTodayValue();
+  const todaySlots = getUniqueSlotsForDate(todayValue);
+
+  if (todaySlots.length) {
+    availabilitySummary.textContent = `${todaySlots.length} horarios disponibles hoy`;
+    availabilityDetail.textContent = `${businessSchedule.openDayText}, ${businessSchedule.hoursText}`;
+    return;
+  }
+
+  for (let dayOffset = 1; dayOffset <= 14; dayOffset += 1) {
+    const nextValue = addDays(todayValue, dayOffset);
+    const nextSlots = getUniqueSlotsForDate(nextValue);
+
+    if (nextSlots.length) {
+      availabilitySummary.textContent = "Proximo dia disponible";
+      availabilityDetail.textContent = `${formatDateForMessage(nextValue)} · ${businessSchedule.hoursText}`;
+      return;
+    }
+  }
+
+  availabilitySummary.textContent = "Agenda por confirmar";
+  availabilityDetail.textContent = `Atencion de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}`;
+}
+
+function renderServices() {
+  const featuredService = services.find((service) => service.featured) || services[0];
+  const restServices = services.filter((service) => service.id !== featuredService.id);
+
+  therapyGrid.innerHTML = `
+    <article class="therapy-feature">
+      <span>${featuredService.number}</span>
+      <h3>${featuredService.name}</h3>
+      <p>${featuredService.description}</p>
+      <dl>
+        <div>
+          <dt>${featuredService.duration}</dt>
+          <dd>${featuredService.price}</dd>
+        </div>
+        <div>
+          <dt>Presion</dt>
+          <dd>${featuredService.pressure}</dd>
+        </div>
+      </dl>
+    </article>
+    <div class="therapy-list">
+      ${restServices
+        .map(
+          (service) => `
+            <article>
+              <span>${service.number}</span>
+              <h3>${service.name}</h3>
+              <p>${service.description}</p>
+              <strong>${service.duration} · ${service.price}</strong>
+            </article>
+          `
+        )
+        .join("")}
+    </div>
+  `;
+
+  services.forEach((service) => {
+    const option = document.createElement("option");
+    option.value = service.id;
+    option.textContent = `${service.name} · ${service.duration}`;
+    therapy.append(option);
+  });
+}
 
 function toggleMenu() {
   const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
@@ -56,7 +223,7 @@ function renderEmptyAvailability() {
   availability.innerHTML = `
     <div class="empty-state">
       <strong>Elige terapia y fecha</strong>
-      <small>Mostraremos horarios sugeridos antes de enviar.</small>
+      <small>Atencion de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}.</small>
     </div>
   `;
 }
@@ -71,26 +238,40 @@ function renderLoadingAvailability() {
   `;
 }
 
+function renderClosedAvailability(message) {
+  selectedSlot = "";
+  availability.innerHTML = `
+    <div class="empty-state">
+      <strong>Sin horarios disponibles</strong>
+      <small>${message}</small>
+    </div>
+  `;
+}
+
 function renderSlots() {
-  const therapyName = therapy.value;
-  const chosenDate = new Date(`${date.value}T12:00:00`);
-  const day = chosenDate.getDay();
-  const slots = day === 0 ? [] : slotMap[therapyName] || [];
+  const service = getSelectedService();
+  const slots = getAvailableSlots(service, date.value);
+  selectedSlot = "";
+
+  if (!isOpenDate(date.value)) {
+    renderClosedAvailability(
+      `Jacqueline atiende de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}.`
+    );
+    return;
+  }
 
   if (!slots.length) {
-    selectedSlot = "";
-    availability.innerHTML = `
-      <div class="empty-state">
-        <strong>Sin cupos para esa fecha</strong>
-        <small>Prueba con un dia de semana o elige otra terapia.</small>
-      </div>
-    `;
+    renderClosedAvailability(
+      isToday(date.value)
+        ? "Para hoy ya no quedan horarios futuros. Elige otra fecha disponible."
+        : "No hay horarios cargados para esa terapia en la fecha elegida."
+    );
     return;
   }
 
   availability.innerHTML = `
     <div class="slots">
-      <strong>${slots.length} horarios sugeridos</strong>
+      <strong>${slots.length} horarios disponibles</strong>
       <small>Selecciona uno antes de enviar la solicitud.</small>
       <div class="slot-buttons">
         ${slots
@@ -113,7 +294,7 @@ function updateAvailability() {
   }
 
   renderLoadingAvailability();
-  availabilityTimer = setTimeout(renderSlots, 620);
+  availabilityTimer = setTimeout(renderSlots, 420);
 }
 
 function setStatus(message, type = "success") {
@@ -131,19 +312,37 @@ function formatDateForMessage(value) {
 }
 
 function buildWhatsappUrl(formData) {
+  const service = getSelectedService();
   const name = formData.get("name").trim();
   const phone = formData.get("phone").trim();
+  const concern = formData.get("concern").trim();
+  const pressure = formData.get("pressure");
+  const notes = formData.get("notes").trim();
   const messageLines = [
     "Hola Jacqueline, quiero reservar una sesion de masajes.",
     "",
     `Nombre: ${name}`,
-    `Terapia: ${therapy.value}`,
+    `Terapia: ${service.name}`,
+    `Duracion: ${service.duration}`,
+    `Valor: ${service.price}`,
     `Fecha: ${formatDateForMessage(date.value)}`,
     `Hora: ${selectedSlot}`,
   ];
 
   if (phone) {
     messageLines.push(`Telefono: ${phone}`);
+  }
+
+  if (concern) {
+    messageLines.push(`Zona o motivo: ${concern}`);
+  }
+
+  if (pressure) {
+    messageLines.push(`Presion preferida: ${pressure}`);
+  }
+
+  if (notes) {
+    messageLines.push(`Comentario: ${notes}`);
   }
 
   messageLines.push("", "Quedo atenta/o a la confirmacion. Muchas gracias.");
@@ -153,12 +352,13 @@ function buildWhatsappUrl(formData) {
 
 function validateForm(formData) {
   const name = formData.get("name").trim();
+  const service = getSelectedService();
 
   if (!name) {
     return "Escribe tu nombre para poder confirmar la reserva.";
   }
 
-  if (!therapy.value || !date.value) {
+  if (!service || !date.value) {
     return "Selecciona terapia y fecha para ver horarios disponibles.";
   }
 
@@ -166,12 +366,21 @@ function validateForm(formData) {
     return "Selecciona una fecha desde hoy en adelante.";
   }
 
-  if (!selectedSlot) {
-    return "Elige uno de los horarios sugeridos antes de enviar.";
+  if (!isOpenDate(date.value)) {
+    return `Jacqueline atiende de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}.`;
+  }
+
+  if (!getAvailableSlots(service, date.value).includes(selectedSlot)) {
+    return "Elige uno de los horarios disponibles antes de enviar.";
   }
 
   return "";
 }
+
+renderServices();
+date.min = getTodayValue();
+renderEmptyAvailability();
+updateHeroAvailability();
 
 menuToggle.addEventListener("click", toggleMenu);
 mobileMenu.addEventListener("click", (event) => {
@@ -225,6 +434,8 @@ bookingForm.addEventListener("submit", (event) => {
   bookingForm.reset();
   renderEmptyAvailability();
 });
+
+const revealItems = document.querySelectorAll("[data-reveal]");
 
 if ("IntersectionObserver" in window) {
   const observer = new IntersectionObserver(

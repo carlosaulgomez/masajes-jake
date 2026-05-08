@@ -447,7 +447,7 @@ h3 {
   color: var(--paper);
   background:
     linear-gradient(150deg, rgba(23, 33, 31, 0.84), rgba(23, 33, 31, 0.48)),
-    url("./1.png?auto=compress&cs=tinysrgb&w=900") center / cover;
+    url("./1.jpg") center / cover;
   box-shadow: var(--shadow);
 }
 
@@ -620,7 +620,8 @@ h3 {
 }
 
 .booking-form input,
-.booking-form select {
+.booking-form select,
+.booking-form textarea {
   width: 100%;
   min-height: 48px;
   padding: 0 14px;
@@ -632,8 +633,15 @@ h3 {
   transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
+.booking-form textarea {
+  min-height: 92px;
+  padding-top: 12px;
+  resize: vertical;
+}
+
 .booking-form input:focus,
-.booking-form select:focus {
+.booking-form select:focus,
+.booking-form textarea:focus {
   border-color: rgba(91, 125, 103, 0.7);
   background: var(--paper);
   box-shadow: 0 0 0 4px rgba(91, 125, 103, 0.12);
