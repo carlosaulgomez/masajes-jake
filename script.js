@@ -13,6 +13,9 @@ const therapy = document.querySelector("#therapy");
 const date = document.querySelector("#date");
 
 const businessWhatsapp = "56954147874";
+const therapySheetId = "1ZiHZxN6T--3K_1-y2gDpLgWsBndSYxG65mOX7sfbp58";
+const therapySheetGid = "0";
+const therapySheetHandler = "__therapySheetLoaded";
 
 const businessSchedule = {
   openDays: [2, 3, 4, 5],
@@ -22,7 +25,7 @@ const businessSchedule = {
   blockedDates: [],
 };
 
-const services = [
+const fallbackServices = [
   {
     id: "desbloqueo-cervical",
     number: "01",
@@ -67,6 +70,7 @@ const services = [
   },
 ];
 
+let services = [...fallbackServices];
 let selectedSlot = "";
 let availabilityTimer;
 
@@ -74,6 +78,139 @@ function getTodayValue() {
   const today = new Date();
   const timezoneOffset = today.getTimezoneOffset() * 60000;
   return new Date(today.getTime() - timezoneOffset).toISOString().split("T")[0];
+}
+
+function normalizeText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function slugify(value) {
+  return normalizeText(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function isTruthy(value) {
+  return ["1", "si", "sí", "true", "yes", "x"].includes(normalizeText(value));
+}
+
+function isInactive(value) {
+  return ["0", "no", "false", "inactivo"].includes(normalizeText(value));
+}
+
+function getCellValues(row) {
+  return (row.c || []).map((cell) => (cell && cell.v != null ? String(cell.v).trim() : ""));
+}
+
+function parseSheetResponse(response) {
+  if (!response || response.status !== "ok" || !response.table || !response.table.rows.length) {
+    throw new Error("La planilla no devolvio filas validas.");
+  }
+
+  const rows = response.table.rows.map(getCellValues);
+  const headers = rows[0].map(normalizeText);
+  const records = rows.slice(1).map((row) =>
+    headers.reduce((record, header, index) => {
+      record[header] = row[index] || "";
+      return record;
+    }, {})
+  );
+
+  const parsedServices = records
+    .map((record, index) => {
+      if (isInactive(record.activo)) {
+        return null;
+      }
+
+      const name = record.nombre;
+      const slots = String(record.horarios || "")
+        .split(/[|,;]/)
+        .map((slot) => slot.trim())
+        .filter((slot) => /^\d{1,2}:\d{2}$/.test(slot));
+
+      if (!name || !slots.length) {
+        return null;
+      }
+
+      return {
+        id: record.id || slugify(name),
+        number: String(index + 1).padStart(2, "0"),
+        name,
+        duration: record.duracion || "50 min",
+        price: record.precio || "Consultar",
+        pressure: record.presion || "A convenir",
+        description: record.descripcion || "Sesion personalizada segun necesidad del cuerpo.",
+        slots,
+        featured: isTruthy(record.destacado),
+      };
+    })
+    .filter(Boolean);
+
+  if (!parsedServices.length) {
+    throw new Error("La planilla no tiene terapias activas con horarios.");
+  }
+
+  if (!parsedServices.some((service) => service.featured)) {
+    parsedServices[0].featured = true;
+  }
+
+  return parsedServices;
+}
+
+function loadSheetServices() {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    const tqx = encodeURIComponent(`out:json;responseHandler:${therapySheetHandler}`);
+    const timeout = window.setTimeout(() => {
+      cleanup();
+      reject(new Error("La planilla demoro demasiado en responder."));
+    }, 8000);
+
+    function cleanup() {
+      window.clearTimeout(timeout);
+      delete window[therapySheetHandler];
+      script.remove();
+    }
+
+    window[therapySheetHandler] = (response) => {
+      try {
+        const sheetServices = parseSheetResponse(response);
+        cleanup();
+        resolve(sheetServices);
+      } catch (error) {
+        cleanup();
+        reject(error);
+      }
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error("No se pudo cargar la planilla de terapias."));
+    };
+
+    script.src = `https://docs.google.com/spreadsheets/d/${therapySheetId}/gviz/tq?tqx=${tqx}&gid=${therapySheetGid}`;
+    document.head.append(script);
+  });
+}
+
+function applyServices(nextServices, source = "local") {
+  const shouldRefreshAvailability = Boolean(therapy.value && date.value);
+  services = nextServices.length ? nextServices : [...fallbackServices];
+  renderServices();
+  if (shouldRefreshAvailability) {
+    updateAvailability();
+  } else {
+    renderEmptyAvailability();
+  }
+  updateHeroAvailability();
+
+  if (source === "sheet") {
+    console.info("Terapias cargadas desde Google Sheets.");
+  }
 }
 
 function getSelectedService() {
@@ -156,6 +293,7 @@ function updateHeroAvailability() {
 function renderServices() {
   const featuredService = services.find((service) => service.featured) || services[0];
   const restServices = services.filter((service) => service.id !== featuredService.id);
+  const previousTherapy = therapy.value;
 
   therapyGrid.innerHTML = `
     <article class="therapy-feature">
@@ -197,6 +335,10 @@ function renderServices() {
     option.textContent = `${service.name} · ${service.duration}`;
     therapy.append(option);
   });
+
+  if (services.some((service) => service.id === previousTherapy)) {
+    therapy.value = previousTherapy;
+  }
 }
 
 function toggleMenu() {
@@ -379,10 +521,13 @@ function validateForm(formData) {
   return "";
 }
 
-renderServices();
 date.min = getTodayValue();
-renderEmptyAvailability();
-updateHeroAvailability();
+applyServices([...fallbackServices]);
+loadSheetServices()
+  .then((sheetServices) => applyServices(sheetServices, "sheet"))
+  .catch((error) => {
+    console.warn("Usando terapias locales por respaldo:", error.message);
+  });
 
 menuToggle.addEventListener("click", toggleMenu);
 mobileMenu.addEventListener("click", (event) => {
