@@ -189,6 +189,8 @@ function renderServices() {
     </div>
   `;
 
+  therapy.innerHTML = '<option value="">Seleccionar</option>';
+
   services.forEach((service) => {
     const option = document.createElement("option");
     option.value = service.id;
