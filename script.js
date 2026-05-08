@@ -200,6 +200,8 @@ function loadSheetServices() {
 function applyServices(nextServices, source = "local") {
   const shouldRefreshAvailability = Boolean(therapy.value && date.value);
   services = nextServices.length ? nextServices : [...fallbackServices];
+  body.dataset.therapySource = source;
+  body.dataset.therapyCount = String(services.length);
   renderServices();
   if (shouldRefreshAvailability) {
     updateAvailability();
@@ -208,9 +210,10 @@ function applyServices(nextServices, source = "local") {
   }
   updateHeroAvailability();
 
-  if (source === "sheet") {
-    console.info("Terapias cargadas desde Google Sheets.");
-  }
+  console.info(
+    source === "sheet" ? "Terapias cargadas desde Google Sheets." : "Terapias locales cargadas como respaldo.",
+    { source, count: services.length, names: services.map((service) => service.name) }
+  );
 }
 
 function getSelectedService() {
