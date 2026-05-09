@@ -12,9 +12,14 @@ const availabilityDetail = document.querySelector("#availabilityDetail");
 const sheetStatus = document.querySelector("#sheetStatus");
 const testimonialGrid = document.querySelector("#testimonialGrid");
 const faqList = document.querySelector("#faqList");
+const promoGrid = document.querySelector("#promoGrid");
+const dateButtons = document.querySelector("#dateButtons");
 const structuredData = document.querySelector("#structuredData");
 const mapsLink = document.querySelector("#mapsLink");
 const mapFrame = document.querySelector("#mapFrame");
+const heroEyebrow = document.querySelector("#heroEyebrow");
+const heroTitle = document.querySelector("#heroTitle");
+const heroLead = document.querySelector("#heroLead");
 const therapy = document.querySelector("#therapy");
 const date = document.querySelector("#date");
 const whatsappFloat = document.querySelector(".whatsapp-float");
@@ -29,6 +34,7 @@ const optionalSheetNames = {
   blocks: "Bloqueos",
   testimonials: "Testimonios",
   faq: "FAQ",
+  promos: "Promos",
 };
 
 let businessSchedule = {
@@ -132,9 +138,34 @@ const fallbackFaqs = [
   },
 ];
 
+const fallbackPromos = [
+  {
+    title: "Pack alivio cervical",
+    description: "Tres sesiones enfocadas en cuello, mandibula y hombros para sostener el cambio semanal.",
+    price: "Consultar por WhatsApp",
+    detail: "Ideal para tension de oficina, bruxismo y pantalla.",
+    featured: true,
+  },
+  {
+    title: "Plan drenaje mensual",
+    description: "Sesiones suaves para piernas pesadas, retencion de liquidos y descanso general.",
+    price: "Consultar por WhatsApp",
+    detail: "Se agenda segun evaluacion y disponibilidad.",
+    featured: false,
+  },
+  {
+    title: "Primera visita",
+    description: "Lectura corporal breve, masaje personalizado y pauta simple para casa.",
+    price: "Desde CLP 42.000",
+    detail: "Buena opcion si no sabes que terapia elegir.",
+    featured: false,
+  },
+];
+
 let services = [...fallbackServices];
 let testimonials = [...fallbackTestimonials];
 let faqs = [...fallbackFaqs];
+let promos = [...fallbackPromos];
 let selectedSlot = "";
 let availabilityTimer;
 let sheetRequestId = 0;
@@ -264,11 +295,31 @@ function parseFaqRecords(records) {
     .filter((faq) => faq.question && faq.answer);
 }
 
+function parsePromoRecords(records) {
+  return records
+    .filter((record) => !isInactive(record.activo))
+    .map((record) => ({
+      title: record.titulo || record.title || record.nombre || "",
+      description: record.descripcion || record.description || "",
+      price: record.precio || record.price || "Consultar por WhatsApp",
+      detail: record.detalle || record.detail || "",
+      featured: isTruthy(record.destacado),
+    }))
+    .filter((promo) => promo.title && promo.description);
+}
+
 function normalizeDateValue(value) {
   const rawValue = String(value || "").trim();
 
   if (/^\d{4}-\d{2}-\d{2}$/.test(rawValue)) {
     return rawValue;
+  }
+
+  const googleDate = rawValue.match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})\)$/);
+  if (googleDate) {
+    const [, year, zeroBasedMonth, day] = googleDate;
+    const month = String(Number(zeroBasedMonth) + 1).padStart(2, "0");
+    return `${year}-${month}-${day.padStart(2, "0")}`;
   }
 
   const [day, month, year] = rawValue.split(/[/-]/).map((part) => part.trim());
@@ -379,6 +430,9 @@ function applyConfig(records) {
   const configuredPhone = getConfigValue(records, "telefono");
   const configuredAddress = getConfigValue(records, "direccion");
   const configuredMapQuery = getConfigValue(records, "mapa_query");
+  const heroEyebrowText = getConfigValue(records, "hero_eyebrow");
+  const heroTitleText = getConfigValue(records, "hero_titulo");
+  const heroLeadText = getConfigValue(records, "hero_subtitulo");
 
   businessSchedule = {
     ...businessSchedule,
@@ -405,6 +459,18 @@ function applyConfig(records) {
 
   if (configuredMapQuery) {
     businessInfo.mapQuery = configuredMapQuery;
+  }
+
+  if (heroEyebrowText) {
+    heroEyebrow.textContent = heroEyebrowText;
+  }
+
+  if (heroTitleText) {
+    heroTitle.textContent = heroTitleText;
+  }
+
+  if (heroLeadText) {
+    heroLead.textContent = heroLeadText;
   }
 
   updateContactLinks();
@@ -471,6 +537,38 @@ function renderFaqs(nextFaqs = faqs) {
     .join("");
 }
 
+function renderPromos(nextPromos = promos) {
+  promos = nextPromos.length ? nextPromos : [...fallbackPromos];
+  promoGrid.innerHTML = promos
+    .map(
+      (promo, index) => `
+        <article class="promo-card ${promo.featured || index === 0 ? "is-featured" : ""}">
+          <span>${promo.featured || index === 0 ? "Destacado" : "Pack"}</span>
+          <h3>${escapeHTML(promo.title)}</h3>
+          <p>${escapeHTML(promo.description)}</p>
+          <strong>${escapeHTML(promo.price)}</strong>
+          ${promo.detail ? `<small>${escapeHTML(promo.detail)}</small>` : ""}
+          <button class="secondary-button promo-consult" type="button" data-promo-title="${escapeHTML(promo.title)}">
+            Consultar pack
+          </button>
+        </article>
+      `
+    )
+    .join("");
+}
+
+function buildPromoWhatsappUrl(title) {
+  const message = [
+    "Hola Jacqueline, quiero consultar por un pack de masajes.",
+    "",
+    `Pack: ${title}`,
+    "",
+    "Quedo atenta/o a la informacion. Muchas gracias.",
+  ].join("\n");
+
+  return `https://wa.me/${businessWhatsapp}?text=${encodeURIComponent(message)}`;
+}
+
 function updateStructuredData() {
   const businessData = {
     "@context": "https://schema.org",
@@ -531,6 +629,7 @@ function applyServices(nextServices, source = "local") {
   body.dataset.therapySource = source;
   body.dataset.therapyCount = String(services.length);
   renderServices();
+  renderDateButtons();
   if (shouldRefreshAvailability) {
     updateAvailability();
   } else {
@@ -599,6 +698,69 @@ function getAvailableSlots(service, value) {
   const now = new Date();
   const minimumTime = now.getHours() * 60 + now.getMinutes() + businessSchedule.sameDayLeadMinutes;
   return service.slots.filter((slot) => getTimeInMinutes(slot) >= minimumTime);
+}
+
+function getSuggestedDates(limit = 8) {
+  const service = getSelectedService();
+  const todayValue = getTodayValue();
+  const suggestedDates = [];
+
+  for (let dayOffset = 0; dayOffset <= 40 && suggestedDates.length < limit; dayOffset += 1) {
+    const value = addDays(todayValue, dayOffset);
+    const slots = service ? getAvailableSlots(service, value) : getUniqueSlotsForDate(value);
+
+    if (slots.length) {
+      suggestedDates.push({
+        value,
+        slots: slots.length,
+        label: dayOffset === 0 ? "Hoy" : formatShortDate(value),
+        detail: dayOffset === 1 ? "Mañana" : formatWeekday(value),
+      });
+    }
+  }
+
+  return suggestedDates;
+}
+
+function formatShortDate(value) {
+  return new Intl.DateTimeFormat("es-CL", {
+    day: "numeric",
+    month: "short",
+  }).format(new Date(`${value}T12:00:00`));
+}
+
+function formatWeekday(value) {
+  return new Intl.DateTimeFormat("es-CL", {
+    weekday: "short",
+  }).format(new Date(`${value}T12:00:00`));
+}
+
+function renderDateButtons() {
+  const suggestedDates = getSuggestedDates();
+
+  if (!suggestedDates.length) {
+    dateButtons.innerHTML = `
+      <div class="empty-date-state">No hay fechas sugeridas con horarios disponibles.</div>
+    `;
+    return;
+  }
+
+  dateButtons.innerHTML = suggestedDates
+    .map(
+      (item) => `
+        <button type="button" data-date-value="${item.value}" aria-pressed="${String(item.value === date.value)}">
+          <strong>${escapeHTML(item.label)}</strong>
+          <span>${escapeHTML(item.detail)} · ${item.slots} ${item.slots === 1 ? "hora" : "horas"}</span>
+        </button>
+      `
+    )
+    .join("");
+}
+
+function selectDate(value) {
+  date.value = value;
+  renderDateButtons();
+  updateAvailability();
 }
 
 function updateHeroAvailability() {
@@ -776,6 +938,7 @@ function updateAvailability() {
   formStatus.textContent = "";
   formStatus.className = "form-status";
   whatsappFallback.hidden = true;
+  renderDateButtons();
 
   if (!therapy.value || !date.value) {
     renderEmptyAvailability();
@@ -879,11 +1042,12 @@ async function hydrateRemoteData() {
       console.warn("Usando terapias locales por respaldo:", error.message);
     });
 
-  const [configResult, blocksResult, testimonialsResult, faqResult] = await Promise.allSettled([
+  const [configResult, blocksResult, testimonialsResult, faqResult, promoResult] = await Promise.allSettled([
     loadOptionalSheet(optionalSheetNames.config),
     loadOptionalSheet(optionalSheetNames.blocks),
     loadOptionalSheet(optionalSheetNames.testimonials),
     loadOptionalSheet(optionalSheetNames.faq),
+    loadOptionalSheet(optionalSheetNames.promos),
   ]);
 
   if (configResult.status === "fulfilled") {
@@ -902,6 +1066,11 @@ async function hydrateRemoteData() {
     renderFaqs(parseFaqRecords(faqResult.value));
   }
 
+  if (promoResult.status === "fulfilled" && promoResult.value.length) {
+    renderPromos(parsePromoRecords(promoResult.value));
+  }
+
+  renderDateButtons();
   updateHeroAvailability();
   updateStructuredData();
 
@@ -914,6 +1083,7 @@ date.min = getTodayValue();
 applyServices([...fallbackServices]);
 renderTestimonials([...fallbackTestimonials]);
 renderFaqs([...fallbackFaqs]);
+renderPromos([...fallbackPromos]);
 updateContactLinks();
 hydrateRemoteData();
 
@@ -936,6 +1106,28 @@ therapyGrid.addEventListener("click", (event) => {
   updateAvailability();
   document.querySelector("#agenda").scrollIntoView({ behavior: "smooth", block: "start" });
   window.setTimeout(() => date.focus(), 450);
+});
+
+dateButtons.addEventListener("click", (event) => {
+  const dateButton = event.target.closest("[data-date-value]");
+  if (!dateButton) {
+    return;
+  }
+
+  selectDate(dateButton.dataset.dateValue);
+});
+
+promoGrid.addEventListener("click", (event) => {
+  const promoButton = event.target.closest("[data-promo-title]");
+  if (!promoButton) {
+    return;
+  }
+
+  const promoUrl = buildPromoWhatsappUrl(promoButton.dataset.promoTitle);
+  const promoWindow = window.open(promoUrl, "_blank");
+  if (promoWindow) {
+    promoWindow.opener = null;
+  }
 });
 
 availability.addEventListener("click", (event) => {
@@ -980,6 +1172,7 @@ bookingForm.addEventListener("submit", (event) => {
   whatsappWindow.opener = null;
   bookingForm.reset();
   renderEmptyAvailability();
+  renderDateButtons();
 });
 
 const revealItems = document.querySelectorAll("[data-reveal]");

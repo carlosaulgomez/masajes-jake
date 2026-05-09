@@ -617,6 +617,79 @@ h3 {
   color: var(--ink-soft);
 }
 
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-rows: repeat(2, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.gallery-item {
+  overflow: hidden;
+  min-height: 260px;
+  margin: 0;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.gallery-item-large {
+  grid-row: span 2;
+}
+
+.promo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.promo-card {
+  display: grid;
+  gap: 12px;
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 248, 0.64);
+}
+
+.promo-card.is-featured {
+  color: var(--paper);
+  background: var(--sea);
+  box-shadow: var(--shadow);
+}
+
+.promo-card span {
+  color: var(--clay);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.promo-card.is-featured span,
+.promo-card.is-featured p,
+.promo-card.is-featured small {
+  color: rgba(255, 253, 248, 0.76);
+}
+
+.promo-card p,
+.promo-card small {
+  color: var(--ink-soft);
+}
+
+.promo-card strong {
+  color: var(--sage-dark);
+  font-size: 1.1rem;
+}
+
+.promo-card.is-featured strong {
+  color: var(--sun);
+}
+
+.promo-card .secondary-button {
+  align-self: end;
+  margin-top: 8px;
+}
+
 .testimonial-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -813,6 +886,66 @@ h3 {
   gap: 14px;
 }
 
+.date-picker {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid rgba(91, 125, 103, 0.18);
+  border-radius: 6px;
+  background: rgba(91, 125, 103, 0.06);
+}
+
+.date-picker span {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.date-picker small {
+  color: var(--ink-soft);
+}
+
+.date-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.date-buttons button {
+  display: grid;
+  gap: 2px;
+  min-height: 62px;
+  padding: 10px 12px;
+  border: 1px solid rgba(91, 125, 103, 0.2);
+  border-radius: 6px;
+  color: var(--ink);
+  background: rgba(255, 253, 248, 0.8);
+  text-align: left;
+  cursor: pointer;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.date-buttons button:hover,
+.date-buttons button[aria-pressed="true"] {
+  color: var(--paper);
+  border-color: var(--sage-dark);
+  background: var(--sage-dark);
+  transform: translateY(-1px);
+}
+
+.date-buttons span {
+  color: inherit;
+  font-size: 0.78rem;
+  opacity: 0.76;
+}
+
+.empty-date-state {
+  padding: 12px;
+  border-radius: 6px;
+  color: var(--ink-soft);
+  background: rgba(255, 253, 248, 0.72);
+}
+
 .availability {
   min-height: 104px;
   padding: 16px;
@@ -931,6 +1064,32 @@ h3 {
   height: 28px;
 }
 
+.mobile-reserve-bar {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 19;
+  display: none;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: var(--radius);
+  background: rgba(255, 253, 248, 0.88);
+  box-shadow: 0 16px 38px rgba(23, 33, 31, 0.18);
+  backdrop-filter: blur(14px);
+}
+
+.mobile-reserve-bar a {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: var(--paper);
+  background: #1f8f59;
+  font-weight: 700;
+}
+
 .site-footer {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -999,10 +1158,20 @@ h3 {
   .hero,
   .therapy-grid,
   .method,
+  .gallery-grid,
+  .promo-grid,
   .testimonial-grid,
   .location-panel,
   .booking-section {
     grid-template-columns: 1fr;
+  }
+
+  .gallery-grid {
+    grid-template-rows: none;
+  }
+
+  .gallery-item-large {
+    grid-row: auto;
   }
 
   .hero {
@@ -1057,6 +1226,10 @@ h3 {
 }
 
 @media (max-width: 620px) {
+  body {
+    padding-bottom: 84px;
+  }
+
   .site-header {
     top: 10px;
     width: calc(100% - 20px);
@@ -1145,6 +1318,18 @@ h3 {
 
   .map-frame {
     min-height: 300px;
+  }
+
+  .date-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .whatsapp-float {
+    display: none;
+  }
+
+  .mobile-reserve-bar {
+    display: block;
   }
 
   .therapy-feature dl,
