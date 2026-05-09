@@ -66,6 +66,8 @@
       <nav class="desktop-nav" aria-label="Principal">
         <a href="#terapias">Terapias</a>
         <a href="#metodo">Metodo</a>
+        <a href="#galeria">Fotos</a>
+        <a href="#promos">Packs</a>
         <a href="#opiniones">Opiniones</a>
         <a href="#ubicacion">Ubicacion</a>
         <a href="#agenda">Agenda</a>
@@ -88,6 +90,8 @@
     <div class="mobile-menu" id="mobileMenu" hidden>
       <a href="#terapias">Terapias</a>
       <a href="#metodo">Metodo</a>
+      <a href="#galeria">Fotos</a>
+      <a href="#promos">Packs</a>
       <a href="#opiniones">Opiniones</a>
       <a href="#ubicacion">Ubicacion</a>
       <a href="#agenda">Agenda</a>
@@ -97,11 +101,11 @@
     <main id="inicio">
       <section class="hero">
         <div class="hero-copy" data-reveal>
-          <p class="eyebrow">Masajes Jacqueline · Peñaflor</p>
-          <h1>Masajes terapeuticos para bajar el volumen.</h1>
-          <p class="hero-lead">
-            Sesiones de masaje clinico y ritual sensorial para liberar cuello,
-            espalda y sistema nervioso sin convertir el descanso en lujo distante.
+          <p class="eyebrow" id="heroEyebrow">Masajes Jacqueline · Peñaflor</p>
+          <h1 id="heroTitle">Masajes en Peñaflor para aliviar cuello, espalda y estres.</h1>
+          <p class="hero-lead" id="heroLead">
+            Sesiones terapeuticas y drenaje linfatico con reserva por WhatsApp,
+            horarios visibles y atencion cercana en Pasaje Tome.
           </p>
           <div class="hero-actions">
             <a class="primary-button" href="#agenda">
@@ -165,7 +169,7 @@
       <section class="section therapies" id="terapias">
         <div class="section-heading" data-reveal>
           <p class="eyebrow">Terapias</p>
-          <h2>Tratamientos con presion precisa, ritmo lento y objetivos claros.</h2>
+          <h2>Masajes terapeuticos, drenaje y rituales de descanso con precios visibles.</h2>
         </div>
         <p class="sheet-status" id="sheetStatus" data-reveal aria-live="polite">
           Terapias locales cargadas. Actualizando disponibilidad...
@@ -186,7 +190,7 @@
         </figure>
         <div class="method-copy" data-reveal>
           <p class="eyebrow">Metodo</p>
-          <h2>Una sesion no parte con aceite. Parte escuchando.</h2>
+          <h2>Primero escuchamos el dolor. Despues elegimos presion y ritmo.</h2>
           <div class="method-steps">
             <article>
               <span>Primero</span>
@@ -202,6 +206,32 @@
             </article>
           </div>
         </div>
+      </section>
+
+      <section class="section gallery-section" id="galeria">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Fotos</p>
+          <h2>Ambiente tranquilo, camilla preparada y detalles pensados para descansar.</h2>
+        </div>
+        <div class="gallery-grid" data-reveal>
+          <figure class="gallery-item gallery-item-large">
+            <img src="./1.jpg" width="1448" height="1086" loading="lazy" decoding="async" alt="Preparacion de aceite para masaje terapeutico">
+          </figure>
+          <figure class="gallery-item">
+            <img src="./2.jpg" width="1448" height="1086" loading="lazy" decoding="async" alt="Sala de masaje con luz calida">
+          </figure>
+          <figure class="gallery-item">
+            <img src="./3.jpg" width="1448" height="1086" loading="lazy" decoding="async" alt="Masaje de espalda con presion controlada">
+          </figure>
+        </div>
+      </section>
+
+      <section class="section promo-section" id="promos">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Packs</p>
+          <h2>Opciones para sostener el alivio mas alla de una sola sesion.</h2>
+        </div>
+        <div class="promo-grid" id="promoGrid" data-reveal></div>
       </section>
 
       <section class="section social-section" id="opiniones">
@@ -253,7 +283,7 @@
       <section class="section booking-section" id="agenda">
         <div class="booking-copy" data-reveal>
           <p class="eyebrow">Agenda</p>
-          <h2>Reserva una sesion y recibe confirmacion al instante.</h2>
+          <h2>Elige terapia, dia y horario. El mensaje queda listo para WhatsApp.</h2>
           <p>
             Completa tus datos, elige el horario que mejor calce y deja que el
             descanso entre en la agenda antes de que el dia se vuelva a llenar.
@@ -303,9 +333,17 @@
               </select>
             </label>
             <label>
-              <span>Fecha</span>
+              <span>Otra fecha</span>
               <input id="date" name="date" type="date">
             </label>
+          </div>
+
+          <div class="date-picker" aria-label="Dias disponibles">
+            <div>
+              <span>Fechas disponibles</span>
+              <small>Elige un dia sugerido o usa el campo "Otra fecha".</small>
+            </div>
+            <div class="date-buttons" id="dateButtons"></div>
           </div>
 
           <div class="form-row">
@@ -365,6 +403,10 @@
         <path d="M8.2 8.4c.2-.5.4-.5.7-.5h.5c.2 0 .4 0 .6.4l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.1-.2.3-.1.5.4.8 1 1.5 1.7 2 .7.5 1.3.8 1.5.8.2.1.4 0 .5-.2l.8-.9c.2-.2.4-.3.7-.2l1.9.9c.3.1.4.3.4.5 0 .6-.4 1.4-.9 1.7-.5.4-1.7.7-3.6-.1-2.1-.9-3.5-2.3-4.4-3.5-.9-1.2-1.7-2.8-1.1-4.6Z"></path>
       </svg>
     </a>
+
+    <div class="mobile-reserve-bar">
+      <a href="#agenda">Reservar por WhatsApp</a>
+    </div>
 
     <footer class="site-footer">
       <strong>Masajes Jacqueline</strong>
