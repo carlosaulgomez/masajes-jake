@@ -12,7 +12,7 @@
     <meta property="og:description" content="Reserva por WhatsApp una sesion de masaje terapeutico en Pasaje Tome, Peñaflor. Atencion de martes a viernes.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="./1.jpg">
-    <script type="application/ld+json">
+    <script id="structuredData" type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "HealthAndBeautyBusiness",
@@ -66,6 +66,8 @@
       <nav class="desktop-nav" aria-label="Principal">
         <a href="#terapias">Terapias</a>
         <a href="#metodo">Metodo</a>
+        <a href="#opiniones">Opiniones</a>
+        <a href="#ubicacion">Ubicacion</a>
         <a href="#agenda">Agenda</a>
       </nav>
       <a class="nav-cta" href="#agenda">
@@ -86,6 +88,8 @@
     <div class="mobile-menu" id="mobileMenu" hidden>
       <a href="#terapias">Terapias</a>
       <a href="#metodo">Metodo</a>
+      <a href="#opiniones">Opiniones</a>
+      <a href="#ubicacion">Ubicacion</a>
       <a href="#agenda">Agenda</a>
       <a href="#agenda">Reservar una sesion</a>
     </div>
@@ -163,6 +167,9 @@
           <p class="eyebrow">Terapias</p>
           <h2>Tratamientos con presion precisa, ritmo lento y objetivos claros.</h2>
         </div>
+        <p class="sheet-status" id="sheetStatus" data-reveal aria-live="polite">
+          Terapias locales cargadas. Actualizando disponibilidad...
+        </p>
         <div class="therapy-grid" id="therapyGrid" data-reveal></div>
       </section>
 
@@ -194,6 +201,52 @@
               <p>Te llevas una pauta simple de movilidad para sostener el alivio.</p>
             </article>
           </div>
+        </div>
+      </section>
+
+      <section class="section social-section" id="opiniones">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Opiniones</p>
+          <h2>Personas que llegaron con tension y salieron con otra respiracion.</h2>
+        </div>
+        <div class="testimonial-grid" id="testimonialGrid" data-reveal></div>
+      </section>
+
+      <section class="section location-faq-section" id="ubicacion">
+        <div class="location-panel" data-reveal>
+          <div>
+            <p class="eyebrow">Ubicacion</p>
+            <h2>Atencion en Pasaje Tome, Peñaflor.</h2>
+            <p>
+              Agenda por WhatsApp y confirma la direccion exacta antes de asistir.
+              La referencia queda lista para abrir en Google Maps.
+            </p>
+            <a
+              class="secondary-button"
+              id="mapsLink"
+              href="https://www.google.com/maps/search/?api=1&query=Pasaje%20Tome%2C%20Pe%C3%B1aflor%2C%20Chile"
+              target="_blank"
+              rel="noopener"
+            >
+              Abrir mapa
+            </a>
+          </div>
+          <iframe
+            class="map-frame"
+            id="mapFrame"
+            title="Mapa de ubicacion de Masajes Jacqueline"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=Pasaje%20Tome%2C%20Pe%C3%B1aflor%2C%20Chile&output=embed"
+          ></iframe>
+        </div>
+
+        <div class="faq-panel" id="preguntas" data-reveal>
+          <div class="section-heading compact-heading">
+            <p class="eyebrow">Preguntas</p>
+            <h2>Lo esencial antes de reservar.</h2>
+          </div>
+          <div class="faq-list" id="faqList"></div>
         </div>
       </section>
 
@@ -315,7 +368,7 @@
 
     <footer class="site-footer">
       <strong>Masajes Jacqueline</strong>
-      <span>Pasaje Tome, Peñaflor · +56 9 5414 7874</span>
+      <span id="footerContact">Pasaje Tome, Peñaflor · +56 9 5414 7874</span>
       <a href="#inicio">Volver arriba</a>
     </footer>
 
