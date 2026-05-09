@@ -15,7 +15,7 @@ id,nombre,duracion,precio,presion,descripcion,horarios,destacado,activo
 Ejemplo:
 
 ```csv
-desbloqueo-cervical,Desbloqueo cervical,80 min,CLP 54.000,Media a firme,Trabajo profundo en cuello y mandibula,10:30|15:00|18:30,si,si
+desbloqueo-cervical,Desbloqueo cervical,80 min,CLP 54.000,Media a firme,Trabajo profundo en cuello y mandíbula,10:30|15:00|18:30,si,si
 ```
 
 ## Pestañas opcionales
@@ -39,11 +39,11 @@ horario_texto,10:00 a 19:30
 margen_minutos,45
 whatsapp,56954147874
 telefono,+56 9 5414 7874
-direccion,Pasaje Tome, Peñaflor
-mapa_query,Pasaje Tome, Peñaflor, Chile
+direccion,Pasaje Tomé, Peñaflor
+mapa_query,Pasaje Tomé, Peñaflor, Chile
 hero_eyebrow,Masajes Jacqueline · Peñaflor
-hero_titulo,Masajes en Peñaflor para aliviar cuello, espalda y estres.
-hero_subtitulo,Sesiones terapeuticas y drenaje linfatico con reserva por WhatsApp.
+hero_titulo,Masajes en Peñaflor para aliviar cuello, espalda y estrés.
+hero_subtitulo,Sesiones terapéuticas y drenaje linfático con reserva por WhatsApp.
 ```
 
 ### Bloqueos
@@ -80,4 +80,4 @@ Columnas:
 titulo,descripcion,precio,detalle,destacado,activo
 ```
 
-Si una pestaña opcional no existe o falla, la pagina usa contenido local de respaldo.
+Si una pestaña opcional no existe o falla, la página usa contenido local de respaldo.
