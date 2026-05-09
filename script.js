@@ -50,10 +50,10 @@ let businessSchedule = {
 
 const businessInfo = {
   name: "Masajes Jacqueline",
-  address: "Pasaje Tome, Peñaflor",
+  address: "Pasaje Tomé, Peñaflor",
   areaServed: "Peñaflor, Region Metropolitana, Chile",
   phoneText: "+56 9 5414 7874",
-  mapQuery: "Pasaje Tome, Peñaflor, Chile",
+  mapQuery: "Pasaje Tomé, Peñaflor, Chile",
 };
 
 const fallbackServices = [
@@ -65,18 +65,18 @@ const fallbackServices = [
     price: "CLP 54.000",
     pressure: "Media a firme",
     description:
-      "Trabajo profundo en trapecio, mandibula y base del craneo para descargar pantallas, bruxismo y tension acumulada.",
+      "Trabajo profundo en trapecio, mandíbula y base del cráneo para descargar pantallas, bruxismo y tensión acumulada.",
     slots: ["10:30", "15:00", "18:30"],
     featured: true,
   },
   {
     id: "drenaje-linfatico",
     number: "02",
-    name: "Drenaje linfatico",
+    name: "Drenaje linfático",
     duration: "50 min",
     price: "CLP 42.000",
     pressure: "Suave",
-    description: "Maniobras suaves, respiracion guiada y pausa final para piernas pesadas.",
+    description: "Maniobras suaves, respiración guiada y pausa final para piernas pesadas.",
     slots: ["10:00", "13:00", "17:00"],
   },
   {
@@ -105,12 +105,12 @@ const fallbackTestimonials = [
   {
     name: "Martina Rivas",
     location: "Providencia",
-    text: "Ajustaron la presion sin hacerme hablar de mas. Sali liviana y sin esa niebla de oficina.",
+    text: "Ajustaron la presión sin hacerme hablar de más. Salí liviana y sin esa niebla de oficina.",
   },
   {
     name: "Camila Soto",
     location: "Peñaflor",
-    text: "Llegue con el cuello duro por semanas y al otro dia pude moverme sin esa puntada.",
+    text: "Llegué con el cuello duro por semanas y al otro día pude moverme sin esa puntada.",
   },
   {
     name: "Daniela Muñoz",
@@ -121,43 +121,43 @@ const fallbackTestimonials = [
 
 const fallbackFaqs = [
   {
-    question: "Como reservo una hora?",
+    question: "¿Cómo reservo una hora?",
     answer: "Elige terapia, fecha y horario en el formulario. Al enviar, WhatsApp se abre con el mensaje listo para confirmar.",
   },
   {
-    question: "Que pasa si tengo una lesion o embarazo?",
-    answer: "Indicalo en el comentario antes de enviar. Jacqueline confirma si la terapia es adecuada o si conviene ajustar la sesion.",
+    question: "¿Qué pasa si tengo una lesión o embarazo?",
+    answer: "Indícalo en el comentario antes de enviar. Jacqueline confirma si la terapia es adecuada o si conviene ajustar la sesión.",
   },
   {
-    question: "Puedo pedir una presion especifica?",
-    answer: "Si. Puedes elegir suave, media o firme, y durante la sesion se ajusta por zona segun tolerancia.",
+    question: "¿Puedo pedir una presión específica?",
+    answer: "Sí. Puedes elegir suave, media o firme, y durante la sesión se ajusta por zona según tolerancia.",
   },
   {
-    question: "Donde atiende?",
-    answer: "La atencion es en Pasaje Tome, Peñaflor. La direccion se confirma por WhatsApp al reservar.",
+    question: "¿Dónde atiende?",
+    answer: "La atención es en Pasaje Tomé, Peñaflor. La dirección se confirma por WhatsApp al reservar.",
   },
 ];
 
 const fallbackPromos = [
   {
     title: "Pack alivio cervical",
-    description: "Tres sesiones enfocadas en cuello, mandibula y hombros para sostener el cambio semanal.",
+    description: "Tres sesiones enfocadas en cuello, mandíbula y hombros para sostener el cambio semanal.",
     price: "Consultar por WhatsApp",
-    detail: "Ideal para tension de oficina, bruxismo y pantalla.",
+    detail: "Ideal para tensión de oficina, bruxismo y pantalla.",
     featured: true,
   },
   {
     title: "Plan drenaje mensual",
-    description: "Sesiones suaves para piernas pesadas, retencion de liquidos y descanso general.",
+    description: "Sesiones suaves para piernas pesadas, retención de líquidos y descanso general.",
     price: "Consultar por WhatsApp",
-    detail: "Se agenda segun evaluacion y disponibilidad.",
+    detail: "Se agenda según evaluación y disponibilidad.",
     featured: false,
   },
   {
     title: "Primera visita",
     description: "Lectura corporal breve, masaje personalizado y pauta simple para casa.",
     price: "Desde CLP 42.000",
-    detail: "Buena opcion si no sabes que terapia elegir.",
+    detail: "Buena opción si no sabes qué terapia elegir.",
     featured: false,
   },
 ];
@@ -215,9 +215,59 @@ function escapeHTML(value) {
   });
 }
 
+const spellingCorrections = [
+  [/\bmandibula\b/gi, "mandíbula"],
+  [/\bcraneo\b/gi, "cráneo"],
+  [/\blinfatico\b/gi, "linfático"],
+  [/\bterapeutico\b/gi, "terapéutico"],
+  [/\bterapeuticos\b/gi, "terapéuticos"],
+  [/\bdesconstracturante\b/gi, "descontracturante"],
+  [/\blecion\b/gi, "lesión"],
+  [/\bleción\b/gi, "lesión"],
+  [/\blesion\b/gi, "lesión"],
+  [/\bsobre carga\b/gi, "sobrecarga"],
+  [/\brecuperacion\b/gi, "recuperación"],
+  [/\bfisica\b/gi, "física"],
+  [/\bretencion\b/gi, "retención"],
+  [/\bliquidos\b/gi, "líquidos"],
+  [/\bsesion\b/gi, "sesión"],
+  [/\bsesiones\b/gi, "sesiones"],
+  [/\binformacion\b/gi, "información"],
+  [/\batencion\b/gi, "atención"],
+  [/\bdireccion\b/gi, "dirección"],
+  [/\bpresion\b/gi, "presión"],
+  [/\bduracion\b/gi, "duración"],
+  [/\bproximo\b/gi, "próximo"],
+  [/\btelefono\b/gi, "teléfono"],
+  [/\bdias\b/gi, "días"],
+  [/\bmetodo\b/gi, "método"],
+  [/\bubicacion\b/gi, "ubicación"],
+  [/\bestres\b/gi, "estrés"],
+  [/\bcalida\b/gi, "cálida"],
+  [/\bevaluacion\b/gi, "evaluación"],
+];
+
+function matchReplacementCase(match, replacement) {
+  if (match === match.toUpperCase()) {
+    return replacement.toUpperCase();
+  }
+
+  return match[0] === match[0].toUpperCase()
+    ? replacement.charAt(0).toUpperCase() + replacement.slice(1)
+    : replacement;
+}
+
+function improveSpanishText(value) {
+  return spellingCorrections.reduce(
+    (text, [pattern, replacement]) =>
+      text.replace(pattern, (match) => matchReplacementCase(match, replacement)),
+    String(value || "").trim()
+  );
+}
+
 function parseSheetRecords(response) {
   if (!response || response.status !== "ok" || !response.table || !response.table.rows.length) {
-    throw new Error("La planilla no devolvio filas validas.");
+    throw new Error("La planilla no devolvió filas válidas.");
   }
 
   const rows = response.table.rows.map(getCellValues);
@@ -239,7 +289,7 @@ function parseServicesRecords(records) {
         return null;
       }
 
-      const name = record.nombre;
+      const name = improveSpanishText(record.nombre);
       const slots = String(record.horarios || "")
         .split(/[|,;]/)
         .map((slot) => slot.trim())
@@ -255,8 +305,8 @@ function parseServicesRecords(records) {
         name,
         duration: record.duracion || "50 min",
         price: record.precio || "Consultar",
-        pressure: record.presion || "A convenir",
-        description: record.descripcion || "Sesion personalizada segun necesidad del cuerpo.",
+        pressure: improveSpanishText(record.presion || "A convenir"),
+        description: improveSpanishText(record.descripcion || "Sesión personalizada según necesidad del cuerpo."),
         slots,
         featured: isTruthy(record.destacado),
       };
@@ -278,9 +328,9 @@ function parseTestimonialsRecords(records) {
   return records
     .filter((record) => !isInactive(record.activo))
     .map((record) => ({
-      name: record.nombre || record.name || "Paciente",
-      location: record.sector || record.ubicacion || record.location || "",
-      text: record.texto || record.testimonio || record.opinion || "",
+      name: improveSpanishText(record.nombre || record.name || "Paciente"),
+      location: improveSpanishText(record.sector || record.ubicacion || record.location || ""),
+      text: improveSpanishText(record.texto || record.testimonio || record.opinion || ""),
     }))
     .filter((testimonial) => testimonial.text);
 }
@@ -289,8 +339,8 @@ function parseFaqRecords(records) {
   return records
     .filter((record) => !isInactive(record.activo))
     .map((record) => ({
-      question: record.pregunta || record.question || "",
-      answer: record.respuesta || record.answer || "",
+      question: improveSpanishText(record.pregunta || record.question || ""),
+      answer: improveSpanishText(record.respuesta || record.answer || ""),
     }))
     .filter((faq) => faq.question && faq.answer);
 }
@@ -299,10 +349,10 @@ function parsePromoRecords(records) {
   return records
     .filter((record) => !isInactive(record.activo))
     .map((record) => ({
-      title: record.titulo || record.title || record.nombre || "",
-      description: record.descripcion || record.description || "",
-      price: record.precio || record.price || "Consultar por WhatsApp",
-      detail: record.detalle || record.detail || "",
+      title: improveSpanishText(record.titulo || record.title || record.nombre || ""),
+      description: improveSpanishText(record.descripcion || record.description || ""),
+      price: improveSpanishText(record.precio || record.price || "Consultar por WhatsApp"),
+      detail: improveSpanishText(record.detalle || record.detail || ""),
       featured: isTruthy(record.destacado),
     }))
     .filter((promo) => promo.title && promo.description);
@@ -337,7 +387,7 @@ function loadSheetRecords({ gid, sheetName }) {
     const tqx = encodeURIComponent(`out:json;responseHandler:${handler}`);
     const timeout = window.setTimeout(() => {
       cleanup();
-      reject(new Error("La planilla demoro demasiado en responder."));
+      reject(new Error("La planilla demoró demasiado en responder."));
     }, 6000);
 
     function cleanup() {
@@ -437,7 +487,7 @@ function applyConfig(records) {
   businessSchedule = {
     ...businessSchedule,
     openDays: openDays ? parseOpenDays(openDays) : businessSchedule.openDays,
-    openDayText: openDayText || openDays || businessSchedule.openDayText,
+    openDayText: improveSpanishText(openDayText || openDays || businessSchedule.openDayText),
     opens: opens || businessSchedule.opens,
     closes: closes || businessSchedule.closes,
     sameDayLeadMinutes: Number.isFinite(leadMinutes) && leadMinutes >= 0 ? leadMinutes : businessSchedule.sameDayLeadMinutes,
@@ -449,28 +499,28 @@ function applyConfig(records) {
   }
 
   if (configuredPhone) {
-    businessInfo.phoneText = configuredPhone;
+    businessInfo.phoneText = improveSpanishText(configuredPhone);
   }
 
   if (configuredAddress) {
-    businessInfo.address = configuredAddress;
-    businessInfo.mapQuery = configuredMapQuery || `${configuredAddress}, Chile`;
+    businessInfo.address = improveSpanishText(configuredAddress);
+    businessInfo.mapQuery = improveSpanishText(configuredMapQuery || `${configuredAddress}, Chile`);
   }
 
   if (configuredMapQuery) {
-    businessInfo.mapQuery = configuredMapQuery;
+    businessInfo.mapQuery = improveSpanishText(configuredMapQuery);
   }
 
   if (heroEyebrowText) {
-    heroEyebrow.textContent = heroEyebrowText;
+    heroEyebrow.textContent = improveSpanishText(heroEyebrowText);
   }
 
   if (heroTitleText) {
-    heroTitle.textContent = heroTitleText;
+    heroTitle.textContent = improveSpanishText(heroTitleText);
   }
 
   if (heroLeadText) {
-    heroLead.textContent = heroLeadText;
+    heroLead.textContent = improveSpanishText(heroLeadText);
   }
 
   updateContactLinks();
@@ -483,7 +533,7 @@ function applyBlockedDates(records) {
     .map((record) => {
       const dateValue = normalizeDateValue(record.fecha || record.date || record.dia);
       if (dateValue) {
-        blockedReasons[dateValue] = record.motivo || record.reason || "Agenda bloqueada para ese dia.";
+        blockedReasons[dateValue] = improveSpanishText(record.motivo || record.reason || "Agenda bloqueada para ese día.");
       }
       return dateValue;
     })
@@ -497,7 +547,7 @@ function applyBlockedDates(records) {
 }
 
 function updateContactLinks() {
-  const quickMessage = encodeURIComponent("Hola Jacqueline, quiero consultar por una sesion de masajes.");
+  const quickMessage = encodeURIComponent("Hola Jacqueline, quiero consultar por una sesión de masajes.");
   const whatsappUrl = `https://wa.me/${businessWhatsapp}?text=${quickMessage}`;
   const mapSearchUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(businessInfo.mapQuery)}`;
   const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(businessInfo.mapQuery)}&output=embed`;
@@ -563,7 +613,7 @@ function buildPromoWhatsappUrl(title) {
     "",
     `Pack: ${title}`,
     "",
-    "Quedo atenta/o a la informacion. Muchas gracias.",
+    "Quedo atenta/o a la información. Muchas gracias.",
   ].join("\n");
 
   return `https://wa.me/${businessWhatsapp}?text=${encodeURIComponent(message)}`;
@@ -574,7 +624,7 @@ function updateStructuredData() {
     "@context": "https://schema.org",
     "@type": "HealthAndBeautyBusiness",
     name: businessInfo.name,
-    description: "Masajes terapeuticos, drenaje linfatico, piedras tibias y sesiones de relajacion en Peñaflor.",
+    description: "Masajes terapéuticos, drenaje linfático, piedras tibias y sesiones de relajación en Peñaflor.",
     telephone: `+${businessWhatsapp}`,
     priceRange: services.map((service) => service.price).join(" / "),
     address: {
@@ -778,14 +828,14 @@ function updateHeroAvailability() {
     const nextSlots = getUniqueSlotsForDate(nextValue);
 
     if (nextSlots.length) {
-      availabilitySummary.textContent = "Proximo dia disponible";
+      availabilitySummary.textContent = "Próximo día disponible";
       availabilityDetail.textContent = `${formatDateForMessage(nextValue)} · ${businessSchedule.hoursText}`;
       return;
     }
   }
 
   availabilitySummary.textContent = "Agenda por confirmar";
-  availabilityDetail.textContent = `Atencion de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}`;
+  availabilityDetail.textContent = `Atención de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}`;
 }
 
 function renderServices() {
@@ -804,7 +854,7 @@ function renderServices() {
           <dd>${escapeHTML(featuredService.price)}</dd>
         </div>
         <div>
-          <dt>Presion</dt>
+          <dt>Presión</dt>
           <dd>${escapeHTML(featuredService.pressure)}</dd>
         </div>
       </dl>
@@ -850,20 +900,20 @@ function renderServices() {
 function toggleMenu() {
   const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
   menuToggle.setAttribute("aria-expanded", String(!isOpen));
-  menuToggle.setAttribute("aria-label", isOpen ? "Abrir menu" : "Cerrar menu");
+  menuToggle.setAttribute("aria-label", isOpen ? "Abrir menú" : "Cerrar menú");
   mobileMenu.hidden = isOpen;
   body.classList.toggle("menu-open", !isOpen);
 }
 
 function closeMenu() {
   menuToggle.setAttribute("aria-expanded", "false");
-  menuToggle.setAttribute("aria-label", "Abrir menu");
+  menuToggle.setAttribute("aria-label", "Abrir menú");
   mobileMenu.hidden = true;
   body.classList.remove("menu-open");
 }
 
 function closeMenuOnDesktop() {
-  if (window.innerWidth > 920) {
+  if (window.innerWidth > 1080) {
     closeMenu();
   }
 }
@@ -873,7 +923,7 @@ function renderEmptyAvailability() {
   availability.innerHTML = `
     <div class="empty-state">
       <strong>Elige terapia y fecha</strong>
-      <small>Atencion de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}.</small>
+      <small>Atención de ${businessSchedule.openDayText}, ${businessSchedule.hoursText}.</small>
     </div>
   `;
 }
@@ -971,18 +1021,18 @@ function buildWhatsappUrl(formData) {
   const pressure = formData.get("pressure");
   const notes = formData.get("notes").trim();
   const messageLines = [
-    "Hola Jacqueline, quiero reservar una sesion de masajes.",
+    "Hola Jacqueline, quiero reservar una sesión de masajes.",
     "",
     `Nombre: ${name}`,
     `Terapia: ${service.name}`,
-    `Duracion: ${service.duration}`,
+    `Duración: ${service.duration}`,
     `Valor: ${service.price}`,
     `Fecha: ${formatDateForMessage(date.value)}`,
     `Hora: ${selectedSlot}`,
   ];
 
   if (phone) {
-    messageLines.push(`Telefono: ${phone}`);
+    messageLines.push(`Teléfono: ${phone}`);
   }
 
   if (concern) {
@@ -990,14 +1040,14 @@ function buildWhatsappUrl(formData) {
   }
 
   if (pressure) {
-    messageLines.push(`Presion preferida: ${pressure}`);
+    messageLines.push(`Presión preferida: ${pressure}`);
   }
 
   if (notes) {
     messageLines.push(`Comentario: ${notes}`);
   }
 
-  messageLines.push("", "Quedo atenta/o a la confirmacion. Muchas gracias.");
+  messageLines.push("", "Quedo atenta/o a la confirmación. Muchas gracias.");
 
   return `https://wa.me/${businessWhatsapp}?text=${encodeURIComponent(messageLines.join("\n"))}`;
 }
@@ -1038,7 +1088,7 @@ async function hydrateRemoteData() {
       setSheetStatus(`Terapias actualizadas desde planilla: ${sheetServices.length}.`, "ready");
     })
     .catch((error) => {
-      setSheetStatus("Usando terapias locales. La planilla no respondio.", "fallback");
+      setSheetStatus("Usando terapias locales. La planilla no respondió.", "fallback");
       console.warn("Usando terapias locales por respaldo:", error.message);
     });
 
